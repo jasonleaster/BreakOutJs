@@ -12,7 +12,9 @@ function log (message) {
 
 window.onload = function() {
     "use strict";
-    var boardWidth = 500;
+    var gameOver = false;
+
+    var boardWidth = 700;
     var boardHeight = 500;
     var gameBoardCanvas = document.getElementById("gameBoard");
 
@@ -33,14 +35,18 @@ window.onload = function() {
         y: 0
     };
 
-    var direction = {x : 0, y : +1};
+    var direction = {x : +1, y : +2};
 
     ball.move = function (speed) {
 
         // Rebound when the ball hit on the boundary
         if (ball.location.y + ball.height + direction.y * speed > boardHeight) {
-            if (direction.y > 0) {
+            if (direction.y > 0 && ball.checkIfHitOnTheBoard()){
                 direction.y *= -1;
+            } else {
+                gameOver = true;
+                log("Game Over");
+                return;
             }
         }
 
@@ -50,8 +56,46 @@ window.onload = function() {
             }
         }
 
+        if (ball.location.x + ball.width + direction.x * speed > boardWidth) {
+            if (direction.x > 0) {
+                direction.x *= -1;
+            }
+        }
+
+        if (ball.location.x + direction.x * speed < 0) {
+            if (direction.x < 0) {
+                direction.x *= -1;
+            }
+        }
+
         ball.location.x += direction.x * speed;
         ball.location.y += direction.y * speed;
+    }
+
+    ball.checkIfHitOnTheBoard = function () {
+        var ballBottomPointAX = ball.location.x;
+        var ballBottomPointAY = ball.location.y + ball.height;
+
+        var ballBottomPointBX = ball.location.x + ball.width;
+        var ballBottomPointBY = ball.location.y + ball.height;
+
+        var paddleLeftUpX = paddle.location.x;
+        var paddleLeftUpY = paddle.location.y;
+        var paddleRightDownX = paddle.location.x + paddle.width;
+        var paddleRightDownY = paddle.location.y + paddle.height;
+
+        if (paddleLeftUpX <= ballBottomPointAX && ballBottomPointAX <= paddleRightDownX &&
+            paddleLeftUpY <= ballBottomPointAY && ballBottomPointAY <= paddleRightDownY) {
+            return true;
+        }
+
+        if (paddleLeftUpX <= ballBottomPointBX && ballBottomPointBX <= paddleRightDownX &&
+            paddleLeftUpY <= ballBottomPointBY && ballBottomPointBY <= paddleRightDownY) {
+            return true;
+        }
+
+        return false;
+
     }
 
     var keyPressedDowns = {};
@@ -92,6 +136,11 @@ window.onload = function() {
         gameBoardCanvasContext.drawImage(paddle, paddle.location.x, paddle.location.y);
         gameBoardCanvasContext.drawImage(ball,   ball.location.x, ball.location.y);
         var deamon = function() {
+
+            if (gameOver){
+                return;
+            }
+
             for (var key in keyPressedDowns) {
                 log("Daemon: " + key + " PressedDown: " + keyPressedDowns[key]);
                 if ((key == 'a' || key == 'd') && keyPressedDowns[key]) {
