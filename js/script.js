@@ -183,7 +183,9 @@ function BreakOutGame(difficulty) {
 
     var keyActions = {};
     keyActions['a'] = paddle.moveLeft;
+    keyActions["ArrowLeft"] = paddle.moveLeft
     keyActions['d'] = paddle.moveRight;
+    keyActions["ArrowRight"] = paddle.moveRight;
 
     function refreshScreen(canvasContext) {
         canvasContext.clearRect(0, 0, boardWidth, boardHeight);
@@ -207,12 +209,14 @@ function BreakOutGame(difficulty) {
     var deamon = function() {
         var gameOver = checkIfGameOver();
         if (gameOver) {
+            modalPopup("gameOverMessage", "gameOverHeader");
             return;
         }
 
         for (var key in keyPressedDowns) {
             log("Daemon: " + key + " PressedDown: " + keyPressedDowns[key]);
-            if ((key == 'a' || key == 'd') && keyPressedDowns[key]) {
+            if ((key == 'a' || key == 'd' || key == "ArrowLeft" || key == "ArrowRight") 
+                && keyPressedDowns[key]) {
                 keyActions[key](defaultPaddleSpeed, boardBoundary);
                 refreshScreen(gameBoardCanvasContext);
             }

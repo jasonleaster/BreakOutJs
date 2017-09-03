@@ -1,0 +1,39 @@
+.modal-overlay {
+	position: fixed;
+	top: 0; left: 0; bottom: 0; right: 0;
+	background: rgba( 17, 67, 87, 0.95 );
+	display: none;
+}
+.modal-box {
+	position: fixed;
+	top: 50%; left: 50%;
+	-webkit-transform: translateX(-50%) translateY(-50%) scale(0);
+	        transform: translateX(-50%) translateY(-50%) scale(0);
+	width: 560px;
+	background: rgba(255,255,255,1);
+	padding: 40px 20px;
+	border-radius: 10px;
+	opacity: 0;
+	-webkit-transition: opacity 0.2s ease-out 0.2s, -webkit-transform 0.4s ease-out;
+	transition: opacity 0.2s ease-out 0.2s, transform 0.4s ease-out;
+}
+.game-over .modal-box {
+	opacity: 1;
+	-webkit-transform: translateX(-50%) translateY(-50%) scale(1);
+	        transform: translateX(-50%) translateY(-50%) scale(1);
+}
+.modal-box {
+	text-align: center;
+}
+.modal-box h3 {
+	font-size: 44px;
+	font-weight: normal;
+	color: #111;
+	margin-bottom: 0.15em;
+	letter-spacing: -2px;
+}
+.modal-score {
+	margin-bottom: 15px;
+	font-size: 24px;
+	color: #444;
+}
