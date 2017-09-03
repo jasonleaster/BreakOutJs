@@ -1,3 +1,9 @@
+/**
+ * Author   : EOF
+ * File     : script.js
+ * Date     : 2017/09/03.
+ */
+
 var ImageBuilder = function(filePath) {
     "use strict";
     var img = new Image();
@@ -5,98 +11,165 @@ var ImageBuilder = function(filePath) {
     return img;
 };
 
-function log (message) {
+function log(message) {
     "use strict";
     console.log(message);
 }
 
-window.onload = function() {
-    "use strict";
-    var gameOver = false;
+var LocationFactory = function(xVal, yVal) {
+    return { x: xVal, y: yVal };
+}
+var DirectionFactory = LocationFactory;
 
-    var boardWidth = 700;
-    var boardHeight = 500;
-    var gameBoardCanvas = document.getElementById("gameBoard");
+function modalPopup(message, header) {
+    $('.modal-message').text(message);
+    $('.modal-box h3').text(header);
 
-    gameBoardCanvas.setAttribute("width", boardWidth);
-    gameBoardCanvas.setAttribute("height", boardHeight);
+    setTimeout(function() {
+        $('.modal-overlay').show();
+        $('body').addClass('game-over');
+    }, 100);
 
-    var gameBoardCanvasContext = gameBoardCanvas.getContext("2d");
-    var paddle = ImageBuilder("./img/paddle.png");
-    var ball   = ImageBuilder("./img/octocat.png");
+    $('.btn-play-again').on('click', function(e) {
+        e.preventDefault();
+        location.reload();
+    });
+}
 
-    paddle.location = {
-        x: 0,
-        y: 0
-    };
+function Ball(ballImage, customLocation) {
+    var image = ballImage;
+    var width = image.width;
+    var height = image.height;
+    var location = customLocation;
+    var direction = DirectionFactory(+1, +2);
 
-    ball.location = {
-        x: 0,
-        y: 0
-    };
+    this.getImage = function () {
+        return image;
+    }
 
-    var direction = {x : +1, y : +2};
+    this.getWidth = function() {
+        return width;
+    }
+    this.getHeight = function() {
+        return height;
+    }
+    this.getLocation = function() {
+        return location;
+    }
+    this.setLocation = function (customLocation) {
+        location = customLocation;
+    }
 
-    ball.move = function (speed) {
+    this.move = function(speed, boundary) {
 
         // Rebound when the ball hit on the boundary
-        if (ball.location.y + ball.height + direction.y * speed > boardHeight) {
-            if (direction.y > 0 && ball.checkIfHitOnTheBoard()){
+        if (location.y + height + direction.y * speed > boundary.height.max) {
+            if (direction.y > 0) {
                 direction.y *= -1;
-            } else {
-                gameOver = true;
-                log("Game Over");
-                return;
             }
         }
 
-        if (ball.location.y + direction.y * speed < 0) {
+        // check if hit the upper boundary
+        if (location.y + direction.y * speed < boundary.height.min) {
             if (direction.y < 0) {
                 direction.y *= -1;
             }
         }
 
-        if (ball.location.x + ball.width + direction.x * speed > boardWidth) {
+        // check if hit the right boundary
+        if (location.x + width + direction.x * speed > boundary.width.max) {
             if (direction.x > 0) {
                 direction.x *= -1;
             }
         }
 
-        if (ball.location.x + direction.x * speed < 0) {
+        // check if hit the left boundary
+        if (location.x + direction.x * speed < boundary.width.min) {
             if (direction.x < 0) {
                 direction.x *= -1;
             }
         }
 
-        ball.location.x += direction.x * speed;
-        ball.location.y += direction.y * speed;
+        location.x += direction.x * speed;
+        location.y += direction.y * speed;
+    }
+}
+
+function Paddle(paddleImage, customLocation) {
+    var image = paddleImage;
+    var width = image.width;
+    var height = image.height;
+    var location = customLocation;
+
+    this.getImage = function () {
+        return image;
     }
 
-    ball.checkIfHitOnTheBoard = function () {
-        var ballBottomPointAX = ball.location.x;
-        var ballBottomPointAY = ball.location.y + ball.height;
-
-        var ballBottomPointBX = ball.location.x + ball.width;
-        var ballBottomPointBY = ball.location.y + ball.height;
-
-        var paddleLeftUpX = paddle.location.x;
-        var paddleLeftUpY = paddle.location.y;
-        var paddleRightDownX = paddle.location.x + paddle.width;
-        var paddleRightDownY = paddle.location.y + paddle.height;
-
-        if (paddleLeftUpX <= ballBottomPointAX && ballBottomPointAX <= paddleRightDownX &&
-            paddleLeftUpY <= ballBottomPointAY && ballBottomPointAY <= paddleRightDownY) {
-            return true;
-        }
-
-        if (paddleLeftUpX <= ballBottomPointBX && ballBottomPointBX <= paddleRightDownX &&
-            paddleLeftUpY <= ballBottomPointBY && ballBottomPointBY <= paddleRightDownY) {
-            return true;
-        }
-
-        return false;
-
+    this.getWidth = function() {
+        return width;
     }
+
+    this.getHeight = function() {
+        return height;
+    }
+
+    this.getLocation = function() {
+        return location;
+    }
+
+    this.setLocation = function (customLocation) {
+        location = customLocation;
+    }
+
+    // Handler for action
+    this.moveLeft = function(speed, boundary) {
+        if (location.x - speed < boundary.width.min) {
+            location.x = boundary.width.min;
+        } else {
+            location.x -= speed;
+        }
+    };
+
+    // Handler for action
+    this.moveRight = function(speed, boundary) {
+        if (location.x + width + speed > boundary.width.max) {
+
+            location.x = boundary.width.max - paddle.width;
+        } else {
+            location.x += speed;
+        }
+    };
+}
+
+var configuration = {
+
+};
+
+var imgBall = ImageBuilder("./img/octocat.png");
+var imgPaddle = ImageBuilder("./img/paddle.png");
+
+// degree of difficulty
+function BreakOutGame(difficulty) {
+    "use strict";
+
+    var boardWidth = 460;
+    var boardHeight = 500;
+    var boardBoundary = {
+        width: { min: 0, max: boardWidth },
+        height: { min: 0, max: boardHeight }
+    };
+
+    var paddle = new Paddle(imgPaddle, LocationFactory(0, boardHeight - imgPaddle.height));
+    var ball = new Ball(imgBall, LocationFactory((boardWidth - imgBall.width)/2, 0));
+
+    var defaultPaddleSpeed = 10;
+    var defaultBallSpeed = 6;
+
+    var gameBoardCanvas = document.getElementById('gameBoard');
+    gameBoardCanvas.width = boardWidth;
+    gameBoardCanvas.height = boardHeight;
+
+    var gameBoardCanvasContext = gameBoardCanvas.getContext("2d");
 
     var keyPressedDowns = {};
     // events
@@ -109,56 +182,66 @@ window.onload = function() {
     });
 
     var keyActions = {};
-    keyActions['a'] = function() {
-        if (paddle.location.x - 10 < 0) {
-            paddle.location.x = 0;
-        } else {
-            paddle.location.x -= 10;
+    keyActions['a'] = paddle.moveLeft;
+    keyActions['d'] = paddle.moveRight;
+
+    function refreshScreen(canvasContext) {
+        canvasContext.clearRect(0, 0, boardWidth, boardHeight);
+        canvasContext.drawImage(paddle.getImage(), paddle.getLocation().x, paddle.getLocation().y);
+        canvasContext.drawImage(ball.getImage(), ball.getLocation().x, ball.getLocation().y);
+    }
+
+    function checkIfGameOver () {
+        var ballLocation = ball.getLocation();
+        if ((ballLocation.y + ball.getHeight()) < (boardHeight - paddle.getHeight())) {
+            return false;
+        }
+        var paddleLocation = paddle.getLocation();
+        if (ballLocation.x > (paddleLocation.x + paddle.getWidth()) || 
+            (ballLocation.x + ball.getWidth()) < paddleLocation.x){
+            return true;
+        }
+        return false;
+    }
+
+    var deamon = function() {
+        var gameOver = checkIfGameOver();
+        if (gameOver) {
+            return;
         }
 
-        log("move to left :" + paddle.location.x);
-    };
-
-    keyActions['d'] = function() {
-        if (paddle.location.x + paddle.width + 10 > boardWidth) {
-            paddle.location.x = boardWidth - paddle.width;
-        } else {
-            paddle.location.x += 10;
+        for (var key in keyPressedDowns) {
+            log("Daemon: " + key + " PressedDown: " + keyPressedDowns[key]);
+            if ((key == 'a' || key == 'd') && keyPressedDowns[key]) {
+                keyActions[key](defaultPaddleSpeed, boardBoundary);
+                refreshScreen(gameBoardCanvasContext);
+            }
         }
-
-
-        log("move to right :" + paddle.location.x);
+        ball.move(defaultBallSpeed, boardBoundary);
+        refreshScreen(gameBoardCanvasContext);
     };
 
-    paddle.onload = function() {
-        paddle.location.y = boardHeight - paddle.height;
+    this.restart = function() {
+        paddle.setLocation(LocationFactory(0, boardHeight - imgPaddle.height));
+        ball.setLocation(LocationFactory((boardWidth - imgBall.width)/2, 0));
+    }
 
-        gameBoardCanvasContext.drawImage(paddle, paddle.location.x, paddle.location.y);
-        gameBoardCanvasContext.drawImage(ball,   ball.location.x, ball.location.y);
-        var deamon = function() {
-
-            if (gameOver){
-                return;
-            }
-
-            for (var key in keyPressedDowns) {
-                log("Daemon: " + key + " PressedDown: " + keyPressedDowns[key]);
-                if ((key == 'a' || key == 'd') && keyPressedDowns[key]) {
-                    keyActions[key]();
-                    gameBoardCanvasContext.clearRect(0, 0, boardWidth, boardHeight);
-                    gameBoardCanvasContext.drawImage(paddle, paddle.location.x, paddle.location.y);
-                    gameBoardCanvasContext.drawImage(ball,   ball.location.x, ball.location.y);
-                }
-            }
-
-            ball.move(10);
-            gameBoardCanvasContext.clearRect(0, 0, boardWidth, boardHeight);
-            gameBoardCanvasContext.drawImage(paddle, paddle.location.x, paddle.location.y);
-            gameBoardCanvasContext.drawImage(ball,   ball.location.x, ball.location.y);
-        };
+    this.start = function() {
         // timer
         setInterval(deamon, 1000 / 30);
-    };
+    }
+}
+
+window.onload = function() {
+
+    var breakOutGame = new BreakOutGame();
+
+    var restartBtn = document.getElementById("playAgainButton");
+    restartBtn.onclick = function() {
+        breakOutGame.restart();
+    }
+
+    breakOutGame.start();
 }
 
 //# sourceMappingURL=srcipt.js
