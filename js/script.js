@@ -29,11 +29,6 @@ function modalPopup(message, header) {
         $('.modal-overlay').show();
         $('body').addClass('game-over');
     }, 100);
-
-    $('.btn-play-again').on('click', function(e) {
-        e.preventDefault();
-        location.reload();
-    });
 }
 
 function Ball(ballImage, customLocation) {
@@ -152,6 +147,11 @@ var imgPaddle = ImageBuilder("./img/paddle.png");
 function BreakOutGame(difficulty) {
     "use strict";
 
+    var gameStatus = "UnStart";
+
+    // how much score the user got in this game
+    var score = 0;
+
     var boardWidth = 460;
     var boardHeight = 500;
     var boardBoundary = {
@@ -175,6 +175,9 @@ function BreakOutGame(difficulty) {
     // events
     window.addEventListener('keydown', function(event) {
         keyPressedDowns[event.key] = true;
+        if (event.key === " ") {
+            gameStatus = "Running";
+        }
     });
 
     window.addEventListener('keyup', function(event) {
@@ -191,6 +194,8 @@ function BreakOutGame(difficulty) {
         canvasContext.clearRect(0, 0, boardWidth, boardHeight);
         canvasContext.drawImage(paddle.getImage(), paddle.getLocation().x, paddle.getLocation().y);
         canvasContext.drawImage(ball.getImage(), ball.getLocation().x, ball.getLocation().y);
+
+        $(".instr").text("Score : " + score);
     }
 
     function checkIfGameOver () {
@@ -203,10 +208,15 @@ function BreakOutGame(difficulty) {
             (ballLocation.x + ball.getWidth()) < paddleLocation.x){
             return true;
         }
+        score += 10;
         return false;
     }
 
     var deamon = function() {
+        if (!(gameStatus === "Running")){
+            return;
+        }
+
         var gameOver = checkIfGameOver();
         if (gameOver) {
             modalPopup("gameOverMessage", "gameOverHeader");
@@ -239,11 +249,6 @@ function BreakOutGame(difficulty) {
 window.onload = function() {
 
     var breakOutGame = new BreakOutGame();
-
-    var restartBtn = document.getElementById("playAgainButton");
-    restartBtn.onclick = function() {
-        breakOutGame.restart();
-    }
 
     breakOutGame.start();
 }

@@ -34,3 +34,12 @@ canvas {
     margin: 20px auto 0;
     width: 460px;
 }
+
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
