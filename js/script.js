@@ -148,6 +148,7 @@ function BreakOutGame(difficulty) {
     "use strict";
 
     var gameStatus = "UnStart";
+    var chanceLeft  = 2;
 
     // how much score the user got in this game
     var score = 0;
@@ -176,7 +177,7 @@ function BreakOutGame(difficulty) {
     window.addEventListener('keydown', function(event) {
         keyPressedDowns[event.key] = true;
         if (event.key === " ") {
-            gameStatus = "Running";
+            _restart();
         }
     });
 
@@ -219,7 +220,13 @@ function BreakOutGame(difficulty) {
 
         var gameOver = checkIfGameOver();
         if (gameOver) {
-            modalPopup("gameOverMessage", "gameOverHeader");
+            if (chanceLeft > 0) {
+                $('.life .heart').eq(chanceLeft).addClass('heart-o');
+                chanceLeft -= 1;
+                gameStatus = "Failed";
+            } else {
+                modalPopup("gameOverMessage", "gameOverHeader");
+            }
             return;
         }
 
@@ -235,10 +242,13 @@ function BreakOutGame(difficulty) {
         refreshScreen(gameBoardCanvasContext);
     };
 
-    this.restart = function() {
+    var _restart = function () {
         paddle.setLocation(LocationFactory(0, boardHeight - imgPaddle.height));
         ball.setLocation(LocationFactory((boardWidth - imgBall.width)/2, 0));
+        gameStatus = "Running";
     }
+
+    this.restart = _restart;
 
     this.start = function() {
         // timer
