@@ -31,12 +31,12 @@ function modalPopup(message, header) {
     }, 100);
 }
 
-function Ball(ballImage, customLocation) {
+function Ball(ballImage, customLocation, customDirection) {
     var image = ballImage;
     var width = image.width;
     var height = image.height;
     var location = customLocation;
-    var direction = DirectionFactory(+1, +2);
+    var direction = customDirection;
 
     this.getImage = function () {
         return image;
@@ -137,16 +137,16 @@ function Paddle(paddleImage, customLocation) {
 }
 
 var configuration = {
-
+    chanceLeft : 2,
+    difficulty : 2
 };
 
 var imgBall = ImageBuilder("./img/octocat.png");
 var imgPaddle = ImageBuilder("./img/paddle.png");
 
 // degree of difficulty
-function BreakOutGame(difficulty) {
+function BreakOutGame(config) {
     "use strict";
-
     var gameStatus = "UnStart";
     var chanceLeft  = 2;
 
@@ -161,7 +161,10 @@ function BreakOutGame(difficulty) {
     };
 
     var paddle = new Paddle(imgPaddle, LocationFactory(0, boardHeight - imgPaddle.height));
-    var ball = new Ball(imgBall, LocationFactory((boardWidth - imgBall.width)/2, 0));
+    var balls = [
+        new Ball(imgBall, LocationFactory((boardWidth - imgBall.width)/2, 0), DirectionFactory(+1, +2)),
+        new Ball(imgBall, LocationFactory((boardWidth - imgBall.width)/2, 0), DirectionFactory(-2, +1))
+    ];
 
     var defaultPaddleSpeed = 10;
     var defaultBallSpeed = 6;
@@ -194,23 +197,33 @@ function BreakOutGame(difficulty) {
     function refreshScreen(canvasContext) {
         canvasContext.clearRect(0, 0, boardWidth, boardHeight);
         canvasContext.drawImage(paddle.getImage(), paddle.getLocation().x, paddle.getLocation().y);
-        canvasContext.drawImage(ball.getImage(), ball.getLocation().x, ball.getLocation().y);
-
+        for (var i = 0; i < balls.length; i++) {
+            var ball = balls[i];
+            canvasContext.drawImage(ball.getImage(), ball.getLocation().x, ball.getLocation().y);
+        }
+        
         $(".instr").text("Score : " + score);
     }
 
-    function checkIfGameOver () {
-        var ballLocation = ball.getLocation();
-        if ((ballLocation.y + ball.getHeight()) < (boardHeight - paddle.getHeight())) {
-            return false;
+    function checkIfGameOver() {
+        var gameOver = false;
+        for (var i = 0; i < balls.length; i++) {
+            var ball = balls[i];
+            var ballLocation = ball.getLocation();
+            if ((ballLocation.y + ball.getHeight()) < (boardHeight - paddle.getHeight())) {
+                gameOver = false; // redundant assignment with intention
+                continue;
+            }
+            var paddleLocation = paddle.getLocation();
+            if (ballLocation.x > (paddleLocation.x + paddle.getWidth()) ||
+                (ballLocation.x + ball.getWidth()) < paddleLocation.x) {
+                gameOver = true;
+                break;
+            }
         }
-        var paddleLocation = paddle.getLocation();
-        if (ballLocation.x > (paddleLocation.x + paddle.getWidth()) || 
-            (ballLocation.x + ball.getWidth()) < paddleLocation.x){
-            return true;
-        }
+
         score += 10;
-        return false;
+        return gameOver;
     }
 
     var deamon = function() {
@@ -238,13 +251,21 @@ function BreakOutGame(difficulty) {
                 refreshScreen(gameBoardCanvasContext);
             }
         }
-        ball.move(defaultBallSpeed, boardBoundary);
+
+        for (var i = 0; i < balls.length; i++) {
+            var ball = balls[i];
+            ball.move(defaultBallSpeed, boardBoundary);
+        }
+        
         refreshScreen(gameBoardCanvasContext);
     };
 
     var _restart = function () {
         paddle.setLocation(LocationFactory(0, boardHeight - imgPaddle.height));
-        ball.setLocation(LocationFactory((boardWidth - imgBall.width)/2, 0));
+        for (var i = 0; i < balls.length; i++) {
+            var ball = balls[i];
+            ball.setLocation(LocationFactory((boardWidth - imgBall.width)/2, 0));
+        }
         gameStatus = "Running";
     }
 
