@@ -22,71 +22,73 @@
     SOFTWARE.
 
  * Author   : EOF
- * Email    : jasonleaster@gmail.com 
- * File     : paddle.js
+ * Email    : jasonleaster@gmail.com
+ * File     : block.js
  * Date     : 2017/09/08.
  */
 
 define(function() {
-
-    var Paddle = function(paddleImage, customLocation, customColor) {
-        var image = paddleImage;
+    var Brick = function(image, customColor, customLocation) {
         var width = image.width;
         var height = image.height;
+
         var color = customColor;
         var location = customLocation;
-
-        this.getImage = function() {
-            return image;
-        }
-
-        this.getWidth = function() {
-            return width;
-        }
-
-        this.getHeight = function() {
-            return height;
-        }
-
-        this.getLocation = function() {
-            return location;
-        }
+        var isExist = true;
 
         this.getColor = function () {
             return color;
-        }
-
-        this.setLocation = function(customLocation) {
-            location = customLocation;
-        }
-
-        // Handler for action
-        this.moveLeft = function(speed, boundary) {
-            if (location.x - speed < boundary.width.min) {
-                location.x = boundary.width.min;
-            } else {
-                location.x -= speed;
-            }
         };
 
-        // Handler for action
-        this.moveRight = function(speed, boundary) {
-            if (location.x + width + speed > boundary.width.max) {
-                location.x = boundary.width.max - width;
-            } else {
-                location.x += speed;
+        this.getLocation = function () {
+            return location;
+        };
+
+        this.getWidth = function () {
+            return width;
+        };
+
+        this.getHeight = function () {
+            return height;
+        };
+
+        this.getIsExist = function () {
+            return isExist;
+        };
+
+        this.setIsExist = function (val) {
+            isExist = val;
+        }
+
+
+        this.collisionCheck = function(ball) {
+            if (!isExist) {
+                return;
+            }
+
+            var ballLocation = ball.getLocation();
+
+            var conditionA =
+                ballLocation.x > location.x &&
+                ballLocation.x < (location.x + width) &&
+                ballLocation.y <= (location.y + height);
+
+            var conditionB =
+                (ballLocation.x + ball.getWidth()) > location.x &&
+                (ballLocation.x + ball.getWidth()) < (location.x + width) &&
+                ballLocation.y <= (location.y + height);
+
+            if (conditionA || conditionB) {
+                isExist = false;               
+                ball.reverseVerticalMoveDirection();
             }
         };
 
         this.draw = function (canvasContext) {
-            canvasContext.beginPath();
             canvasContext.fillStyle = color;
             canvasContext.fillRect(location.x, location.y, width, height);
-            canvasContext.closePath();
-        };
-    };
+        }
+    }
 
-    return Paddle;
-});
-
-//# sourceMappingURL=js/paddle.js
+    return Brick;
+})
