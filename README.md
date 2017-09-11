@@ -9,6 +9,8 @@ The purpose of this project:
 
 With the help of git, I set many tags in the repository to note the key point of the development process: 
 
+![images](./img/stepsScreenShoot.jpg)
+
 **Step1**: Enable reaction of the paddle to the user input on the keyboard. The image will move right or left after you press down the key 'a' or 'd' on the keyboard.   
 
 **Step2**: Add the `Ball` in the context, ball can move and rebound.   

@@ -56,7 +56,11 @@ define(function() {
 
         this.getColor = function () {
             return color;
-        }
+        };
+
+        this.getDirection = function () {
+            return direction;
+        };
 
         this.reverseVerticalMoveDirection = function () {
             direction.y *= -1;

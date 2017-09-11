@@ -13,15 +13,6 @@ requirejs.config({
     }
 });
 
-var ImageBuilder = function(filePath) {
-    "use strict";
-    var img = new Image();
-    img.src = filePath;
-    return img;
-};
-var imgBall = ImageBuilder("./img/octocat.png");
-var imgPaddle = ImageBuilder("./img/paddle.png");
-
 /*
  * Make sure that the images have been loaded.
  */

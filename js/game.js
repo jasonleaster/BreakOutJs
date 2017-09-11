@@ -48,31 +48,36 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
     var BreakOutGame = function(config) {
         "use strict";
         var gameStatus = "UnStart";
+        var gameResult = "Win";
         var chanceLeft = 2;
 
         // how much score the user got in this game
         var score = 0;
 
         var boardWidth = 460;
-        var boardHeight = 500;
+        var boardHeight = 400;
         var boardBoundary = {
             width: { min: 0, max: boardWidth },
             height: { min: 0, max: boardHeight }
         };
 
-        var paddle = new Paddle({width: 150, height: 20}, LocationFactory(0, boardHeight - imgPaddle.height), "#66D9EF");
+        var abstractPaddle = {width:  150, height: 20};
+        var abstractBall = {width:10, height:10};
+        var paddle = new Paddle(abstractPaddle, LocationFactory(0, boardHeight - abstractPaddle.height), "#66D9EF");
         var balls = [
-            new Ball({width:10, height:10}, LocationFactory((boardWidth - imgBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
-            new Ball({width:10, height:10}, LocationFactory((boardWidth - imgBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
-            new Ball({width:10, height:10}, LocationFactory((boardWidth - imgBall.width) / 2, 150), DirectionFactory(+1, +1), "grey"),
+            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
+            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+            //new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
         ];
         var bricks = {
             rows: 4,
-            cols: 5,
+            cols: 6,
             container: []
         };
+        bricks.counts = bricks.rows * bricks.cols;
         bricks.checkIfCollision = function(ball) {
             // check for bricks
+            var totalBricks = bricks.rows * bricks.cols;
             var brickInstances = bricks.container;
             for (var i = 0; i < brickInstances.length; i++) {
                 var bricksInRow = brickInstances[i];
@@ -82,9 +87,12 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
 
                     if (brick.getIsExist()) {
                         brick.collisionCheck(ball);
+                    } else {
+                        totalBricks--;
                     }
                 }
             }
+            bricks.counts = totalBricks;
         };
 
         for (var i = 0; i < bricks.rows; i++ ) {
@@ -116,8 +124,8 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
             bricks.container[i] = containerInRow;
         }
 
-        var defaultPaddleSpeed = 10;
-        var defaultBallSpeed = 6;
+        var defaultPaddleSpeed = 20;
+        var defaultBallSpeed = 5;
 
         var gameBoardCanvas = document.getElementById('gameBoard');
         gameBoardCanvas.width = boardWidth;
@@ -172,6 +180,12 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
 
         function checkIfGameOver() {
             var gameOver = false;
+
+            if (bricks.counts == 0) {
+                gameResult = "Win";
+                return true;
+            }
+
             for (var k = 0; k < balls.length; k++) {
                 var ball = balls[k];
                 var ballLocation = ball.getLocation();
@@ -186,6 +200,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
                 if (ballLocation.x > (paddleLocation.x + paddle.getWidth()) ||
                     (ballLocation.x + ball.getWidth()) < paddleLocation.x) {
                     gameOver = true;
+                    gameResult = "Failed";
                     return gameOver;
                 } else {
                     score += 10;
@@ -203,12 +218,16 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
 
             var gameOver = checkIfGameOver();
             if (gameOver) {
-                if (chanceLeft > 0) {
-                    $('.life .heart').eq(chanceLeft).addClass('heart-o');
-                    chanceLeft -= 1;
-                    gameStatus = "Failed";
+                if (gameResult === "Win") {
+                    modalPopup("Congradulations! You win the game!", "Good Job :)");
                 } else {
-                    modalPopup("gameOverMessage", "gameOverHeader");
+                    if (chanceLeft > 0) {
+                        $('.life .heart').eq(chanceLeft).addClass('heart-o');
+                        chanceLeft -= 1;
+                        gameStatus = "Failed";
+                    } else {
+                        modalPopup("You lose the game, why not try it again!", "That's a pity ... ");
+                    }
                 }
                 return;
             }
@@ -230,10 +249,10 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
         };
 
         var _restart = function() {
-            paddle.setLocation(LocationFactory(0, boardHeight - imgPaddle.height));
+            paddle.setLocation(LocationFactory(0, boardHeight - paddle.getHeight()));
             for (var i = 0; i < balls.length; i++) {
                 var ball = balls[i];
-                ball.setLocation(LocationFactory((boardWidth - imgBall.width) / 2, 150));
+                ball.setLocation(LocationFactory((boardWidth - ball.getWidth()) / 2, 150));
             }
             gameStatus = "Running";
         }
@@ -242,7 +261,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
 
         this.start = function() {
             // timer
-            setInterval(deamon, 1000 / 30);
+            setInterval(deamon, 1000 / 20);
         }
     };
 

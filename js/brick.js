@@ -60,7 +60,11 @@ define(function() {
             isExist = val;
         }
 
-
+        /*
+         * Very simple and uncomplete handler for collision.
+         * unperfect but ... this is enough for current implementation.
+         * The real collision in physics wil be more complicated.
+         */
         this.collisionCheck = function(ball) {
             if (!isExist) {
                 return;
@@ -82,6 +86,7 @@ define(function() {
                 isExist = false;               
                 ball.reverseVerticalMoveDirection();
             }
+
         };
 
         this.draw = function (canvasContext) {
