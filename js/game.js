@@ -27,7 +27,8 @@
  * Date     : 2017/09/08.
  */
 
-define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball, Brick) {
+define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'], 
+    function($, Paddle, Ball, BrickManager, LocationFactory) {
 
     function modalPopup(message, header) {
         $('.modal-message').text(message);
@@ -39,14 +40,12 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
         }, 100);
     }
 
-    var LocationFactory = function(xVal, yVal) {
-        return { x: xVal, y: yVal };
-    }
     var DirectionFactory = LocationFactory;
 
     // degree of difficulty
     var BreakOutGame = function(config) {
         "use strict";
+        var debugMode = true;
         var gameStatus = "UnStart";
         var gameResult = "Win";
         var chanceLeft = 2;
@@ -61,75 +60,52 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/brick'], function($, Paddle, Ball,
             height: { min: 0, max: boardHeight }
         };
 
-        var abstractPaddle = {width:  150, height: 20};
+        var abstractPaddle = {width:  150, height: 20}; 
         var abstractBall = {width:10, height:10};
         var paddle = new Paddle(abstractPaddle, LocationFactory(0, boardHeight - abstractPaddle.height), "#66D9EF");
         var balls = [
             new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
-            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+            // new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
             //new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
         ];
-        var bricks = {
-            rows: 4,
-            cols: 6,
-            container: []
-        };
-        bricks.counts = bricks.rows * bricks.cols;
-        bricks.checkIfCollision = function(ball) {
-            // check for bricks
-            var totalBricks = bricks.rows * bricks.cols;
-            var brickInstances = bricks.container;
-            for (var i = 0; i < brickInstances.length; i++) {
-                var bricksInRow = brickInstances[i];
-
-                for (var j = 0; j < bricksInRow.length; j++) {
-                    var brick = bricksInRow[j];
-
-                    if (brick.getIsExist()) {
-                        brick.collisionCheck(ball);
-                    } else {
-                        totalBricks--;
-                    }
-                }
-            }
-            bricks.counts = totalBricks;
-        };
-
-        for (var i = 0; i < bricks.rows; i++ ) {
-            
-            var containerInRow = bricks.container[i] || [];
-
-            var brickColor;
-            if (i == 0) {
-                brickColor = '#2980b9';
-            } else if (i == 1) {
-                brickColor = '#27ae60';
-            } else if (i == 2) {
-                brickColor = '#ED8F03';
-            } else {
-                brickColor = '#e74c3c';
-            }
-
-            for (var j = 0; j < bricks.cols; j++) {
-                var brickWidth = boardWidth / bricks.cols;
-                var brickHeight = 20;
-
-                var brick = new Brick(
-                    {width: brickWidth - 2, height: brickHeight - 2}, 
-                    brickColor, 
-                    LocationFactory(j*brickWidth, i*brickHeight));
-
-                containerInRow.push(brick);
-            }
-            bricks.container[i] = containerInRow;
-        }
+        var bricks = BrickManager.build(boardWidth, 4, 6);
 
         var defaultPaddleSpeed = 20;
-        var defaultBallSpeed = 5;
+        var defaultBallSpeed = 1;
 
         var gameBoardCanvas = document.getElementById('gameBoard');
         gameBoardCanvas.width = boardWidth;
         gameBoardCanvas.height = boardHeight;
+
+        var dragging = false;
+        var selectedBall;
+        // add mousedown event handler
+        gameBoardCanvas.onmousedown = function(event) {
+            if (debugMode) {
+                var x = event.layerX;
+                var y = event.layerY;
+                for (var i = 0; i < balls.length; i++) {
+                    var ballLocation = balls[i].getLocation();
+                    if (Math.abs(ballLocation.y - y) + Math.abs(ballLocation.x - x) < balls[i].getWidth()) {
+                        dragging = true;
+                        selectedBall = balls[i];
+                        return;
+                    }
+                }
+            }
+        };
+
+        // add mouseup event handler
+        gameBoardCanvas.onmouseup = function(event) {
+            if (debugMode) {
+                var x = event.layerX;
+                var y = event.layerY;
+                if (dragging) {
+                    dragging = false;
+                    selectedBall.setLocation(LocationFactory(x, y));
+                }
+            }
+        };
 
         var gameBoardCanvasContext = gameBoardCanvas.getContext("2d");
 

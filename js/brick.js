@@ -23,7 +23,7 @@
 
  * Author   : EOF
  * Email    : jasonleaster@gmail.com
- * File     : block.js
+ * File     : brick.js
  * Date     : 2017/09/08.
  */
 
@@ -61,7 +61,7 @@ define(function() {
         }
 
         /*
-         * Very simple and uncomplete handler for collision.
+         * Very simple and naive handler for collision.
          * unperfect but ... this is enough for current implementation.
          * The real collision in physics wil be more complicated.
          */

@@ -110,7 +110,7 @@ define(function() {
 
             location.x += direction.x * speed;
             location.y += direction.y * speed;
-        }
+        };
     };
 
     return Ball;

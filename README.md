@@ -16,9 +16,12 @@ With the help of git, I set many tags in the repository to note the key point of
 **Step2**: Add the `Ball` in the context, ball can move and rebound.   
 **Step3**: Add reaction of the ball for hitting on the paddle and add the check   function for game over.   
 **Step4**: Basic core-function have been finished. More refactor and improve the quility of implementation.   
-**Step5**: What if only one ball is boring in the game context, let add more one :)   
+**Step5**: Do you feel boring for playing with only one ball ? let's add one more :)   
 **Step6**：I come to know `AMD (Asynchronous Module Definition)`, refactor into    modulization with [requirejs](http://requirejs.org/).    
 
+Finally, there is the UML of this implementation.   
+
+![images](./img/BreakOutJsUML.png)
 
 # 经典弹球游戏实现
 
@@ -37,9 +40,11 @@ With the help of git, I set many tags in the repository to note the key point of
 **Step6**：了解到AMD相关知识，借助requirejs对现有实现进行拆分重构   
 
 
-TODO:
+Finished:   
 * 弹球和挡板使用CSS颜色填充即可, 去掉图片   
 * 支持拖拽   
 
+TODO:
+* 界面添加按钮，方便手机浏览器打开时操作挡板
 
 
