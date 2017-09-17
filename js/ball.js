@@ -70,6 +70,10 @@ define(function() {
             direction.x *= -1;
         };
 
+        this.basicInfoToVector = function (){
+            return [location.x, location.y, direction.x, direction.y];
+        };
+
         this.draw = function (canvasContext) {
             canvasContext.beginPath();
             canvasContext.fillStyle = color;

@@ -7,7 +7,15 @@ canvas {
     background: #eee;
 }
 
+select {
+    margin: 0 10px;
+}
 
+
+.instr {
+    float: left;
+    padding-right: 10px;
+}
 .btn-play-again {
     background: #C44752;
     display: inline-block;

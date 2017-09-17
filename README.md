@@ -39,7 +39,6 @@ Finally, there is the UML of this implementation.
 **Step5**: 一个球无趣，那就来两个:stuck_out_tongue:    
 **Step6**：了解到AMD相关知识，借助requirejs对现有实现进行拆分重构   
 
-
 Finished:   
 * 弹球和挡板使用CSS颜色填充即可, 去掉图片   
 * 支持拖拽   
@@ -47,4 +46,17 @@ Finished:
 TODO:
 * 界面添加按钮，方便手机浏览器打开时操作挡板
 
+### 文件简介   
+
+js/ball.js  弹球模块
+js/brick.js 砖块模块
+
+### AI训练模块   
+* 系统输入: 球当前的状态，挡板当前的状态
+`[球速, 球运动的方向, 球的位置, 挡板当前的速度, 挡板当前的方向，挡板当前的位置]`
+
+* 系统输出: 挡板的移动方向
++1: 右移
+0 : 不动
+-1: 左移
 

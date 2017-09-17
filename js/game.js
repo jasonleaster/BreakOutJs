@@ -65,13 +65,13 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         var paddle = new Paddle(abstractPaddle, LocationFactory(0, boardHeight - abstractPaddle.height), "#66D9EF");
         var balls = [
             new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
-            // new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
             //new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
         ];
         var bricks = BrickManager.build(boardWidth, 4, 6);
 
         var defaultPaddleSpeed = 20;
-        var defaultBallSpeed = 1;
+        var defaultBallSpeed = 5;
 
         var gameBoardCanvas = document.getElementById('gameBoard');
         gameBoardCanvas.width = boardWidth;
@@ -187,8 +187,16 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             return gameOver;
         }
 
+        function _gameOver () {
+            return !(gameStatus === "Running");
+        }
+
+        this.isGameOver = function () {
+            return _gameOver();
+        }
+
         var deamon = function() {
-            if (!(gameStatus === "Running")) {
+            if (_gameOver()) {
                 return;
             }
 
@@ -236,9 +244,23 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         this.restart = _restart;
 
         this.start = function() {
+            // first time to refresh screen
+            refreshScreen(gameBoardCanvasContext);
+
             // timer
             setInterval(deamon, 1000 / 20);
-        }
+        };
+
+        // expose API for player
+        this.movePaddleLeft = function () {
+            paddle.moveLeft();
+        };
+        this.movePaddleRight = function () {
+            paddle.moveRight();
+        };
+        this.getUserScore = function () {
+            return score;
+        };
     };
 
     return BreakOutGame;
