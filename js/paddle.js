@@ -84,6 +84,10 @@ define(function() {
             canvasContext.fillRect(location.x, location.y, width, height);
             canvasContext.closePath();
         };
+
+        this.basicInfoToVector = function (){
+            return [location.x, location.y];
+        };
     };
 
     return Paddle;

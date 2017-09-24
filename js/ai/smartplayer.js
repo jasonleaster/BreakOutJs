@@ -23,22 +23,30 @@
 
  * Author   : EOF
  * Email    : jasonleaster@gmail.com
- * File     : player.js
+ * File     : smartplayer.js
  * Date     : 2017/09/24.
  */
 
 
-define(['js/game'], function(Game) {
-    var Player = function(playerName) {
-        
+define(['js/game', 'libs/synaptic.min'], function(Game, synaptic) {
+
+    var Architect = synaptic.Architect;
+    var Network = synaptic.Network;
+
+    var SmartPlayer = function(playerName) {
+
         var name = playerName;
         var breakOutGame = new Game();
         var deamonId;
         var gameEndHandler;
+        var inputs = 6;
+        var outputs = 1;
+        var genome = new Architect.Perceptron(inputs, 4, 4, outputs);;
 
         var deamon = function () {
             if (breakOutGame.isGameOver()) {
                 clearInterval(deamonId);
+                debugger;
                 gameEndHandler();
                 return;
             }
@@ -47,12 +55,22 @@ define(['js/game'], function(Game) {
             var balls = breakOutGame.getBalls();
             var paddle = breakOutGame.getPaddle();
             // 2. input the information into the decision system
+            var inputs = [];
+            for (var i = 0; i < balls.length; i++) {
+                inputs = inputs.concat(balls[i].basicInfoToVector());
+            }
+
+            inputs = inputs.concat(paddle.basicInfoToVector());
+            
 
             // 3. the system will output the action of current environment
-            var output = balls[0].getLocation().x - (paddle.getLocation().x + paddle.getWidth()/2);
-            if (output < 0) {
+            // Apply to network
+            var outputs = genome.activate(inputs);
+
+            var output =  outputs[0];
+            if (output < 0.5) {
                 breakOutGame.movePaddleLeft();
-            } else if (output > 0) {
+            } else if (output > 0.5) {
                 breakOutGame.movePaddleRight();
             } else {
                 // do nothing. Don't need to move paddle
@@ -79,7 +97,10 @@ define(['js/game'], function(Game) {
         this.getPlayerName = function () {
             return name;
         };
+        this.getNet = function () {
+            return genome;
+        }
     }
 
-    return Player;
+    return SmartPlayer;
 });

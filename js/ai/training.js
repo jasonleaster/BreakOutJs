@@ -27,7 +27,7 @@
  * Date     : 2017/09/24.
  */
 
-define(['js/ai/player', 'libs/async.min'], function(Player, async) {
+define(['js/ai/smartplayer', 'libs/async.min'], function(Player, async) {
 
     var TrainingModule = function() {
         var MAX_ITER_TIMES = 1000;
@@ -38,6 +38,72 @@ define(['js/ai/player', 'libs/async.min'], function(Player, async) {
         var players = [];
 
         debugger;
+
+        var crossOver = function (netA, netB) {
+          // Swap (50% prob.)
+          if (Math.random() > 0.5) {
+            var tmp = netA;
+            netA = netB;
+            netB = tmp;
+          }
+
+          // Clone network
+          netA = _.cloneDeep(netA);
+          netB = _.cloneDeep(netB);
+
+          // Cross over data keys
+          crossOverDataKey(netA.neurons, netB.neurons, 'bias');
+
+          return netA;
+        }
+
+
+        // Given an Array of objects with key `key`,
+        // and also a `mutationRate`, randomly Mutate
+        // the value of each key, if random value is
+        // lower than mutationRate for each element.
+        var mutateDataKeys = function (a, key, mutationRate){
+          for (var k = 0; k < a.length; k++) {
+            // Should mutate?
+            if (Math.random() > mutationRate) {
+              continue;
+            }
+
+            a[k][key] += a[k][key] * (Math.random() - 0.5) * 3 + (Math.random() - 0.5);
+          }
+        }
+
+        // Does random mutations across all
+        // the biases and weights of the Networks
+        // (This must be done in the JSON to
+        // prevent modifying the current one)
+        var mutate = function (net){
+          // Mutate
+          mutateDataKeys(net.neurons, 'bias', 0.4);
+          
+          mutateDataKeys(net.connections, 'weight', 0.4);
+
+          return net;
+        }
+
+        // Given an Object A and an object B, both Arrays
+        // of Objects:
+        // 
+        // 1) Select a cross over point (cutLocation)
+        //    randomly (going from 0 to A.length)
+        // 2) Swap values from `key` one to another,
+        //    starting by cutLocation
+        var crossOverDataKey = function (a, b, key) {
+          var cutLocation = Math.round(a.length * Math.random());
+
+          var tmp;
+          for (var k = cutLocation; k < a.length; k++) {
+            // Swap
+            tmp = a[k][key];
+            a[k][key] = b[k][key];
+            b[k][key] = tmp;
+          }
+        }
 
         var executeGenome = function(player, next) {
              player.playGame(next);
@@ -64,9 +130,18 @@ define(['js/ai/player', 'libs/async.min'], function(Player, async) {
                     for (var n = 0; n < players.length - 2; n++) {
                         players.pop();
                     }
-
+                    var bestPlayer = players[0];
                     if (players.length > 1) {
+                        var playA = players[0];
+                        var playB = players[1];
+                        mutate(crossOver(playA.getNet(), playerB.getNet()));
+
                         iterationExucutor();
+                    } else if (players.length == 1 && players[0].getScore() < 200) {
+                        mutate(crossOver(bestPlayer.getNet(), bestPlayer.getNet()));
+                        iterationExucutor();
+                    } else {
+                        console.log("Training finished! Best Score: " + bestPlayer.getScore());
                     }
                 }
             );
