@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Breakout clone In JS</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/modal.css"/>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <div class="game-notifications clearfix">
+        <div class="instr">
+            Score : 0
+        </div>
+        <ul class="life">
+            <li class="heart"></li>
+            <li class="heart"></li>
+            <li class="heart"></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <canvas id="gameBoard"></canvas>
+    </div>
+
+    <!-- Load requirejs -->
+    <script type="text/javascript" src="libs/require.js" data-main="training_entry"></script>
+</body>
+
+</html>

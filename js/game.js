@@ -46,9 +46,10 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
     var BreakOutGame = function(config) {
         "use strict";
         var debugMode = true;
-        var gameStatus = "UnStart";
-        var gameResult = "Win";
+        var gameStatus = "UnStart"; // UnStart, Running, Finished
+        var gameResult = "Win";     // Win, Finished
         var chanceLeft = 2;
+        var deamonId;
 
         // how much score the user got in this game
         var score = 0;
@@ -60,12 +61,12 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             height: { min: 0, max: boardHeight }
         };
 
-        var abstractPaddle = {width:  150, height: 20}; 
-        var abstractBall = {width:10, height:10};
+        var abstractPaddle = {width: 150, height: 20}; 
+        var abstractBall   = {width: 10,  height: 10};
         var paddle = new Paddle(abstractPaddle, LocationFactory(0, boardHeight - abstractPaddle.height), "#66D9EF");
         var balls = [
             new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
-            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+            // new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
             //new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
         ];
         var bricks = BrickManager.build(boardWidth, 4, 6);
@@ -188,7 +189,10 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         }
 
         function _gameOver () {
-            return !(gameStatus === "Running");
+            if (gameStatus == "UnStart" || gameStatus === "Running") {
+                return false;
+            }
+            return true;
         }
 
         this.isGameOver = function () {
@@ -202,17 +206,19 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
 
             var gameOver = checkIfGameOver();
             if (gameOver) {
+                gameStatus = "Finished";
+
                 if (gameResult === "Win") {
                     modalPopup("Congradulations! You win the game!", "Good Job :)");
                 } else {
                     if (chanceLeft > 0) {
                         $('.life .heart').eq(chanceLeft).addClass('heart-o');
                         chanceLeft -= 1;
-                        gameStatus = "Failed";
                     } else {
                         modalPopup("You lose the game, why not try it again!", "That's a pity ... ");
                     }
                 }
+                clearInterval(deamonId);
                 return;
             }
 
@@ -248,18 +254,24 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             refreshScreen(gameBoardCanvasContext);
 
             // timer
-            setInterval(deamon, 1000 / 20);
+            deamonId = setInterval(deamon, 1000 / 20);
         };
 
         // expose API for player
         this.movePaddleLeft = function () {
-            paddle.moveLeft();
+            paddle.moveLeft(defaultPaddleSpeed, boardBoundary);
         };
         this.movePaddleRight = function () {
-            paddle.moveRight();
+            paddle.moveRight(defaultPaddleSpeed, boardBoundary);
         };
         this.getUserScore = function () {
             return score;
+        };
+        this.getBalls = function () {
+            return balls;
+        };
+        this.getPaddle = function () {
+            return paddle;
         };
     };
 
