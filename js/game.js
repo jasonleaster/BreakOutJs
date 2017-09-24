@@ -197,10 +197,10 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
 
         this.isGameOver = function () {
             return _gameOver();
-        }
+        };
 
         var deamon = function() {
-            if (_gameOver()) {
+            if (_gameOver() || gameStatus == "UnStart") {
                 return;
             }
 
@@ -210,15 +210,17 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
 
                 if (gameResult === "Win") {
                     modalPopup("Congradulations! You win the game!", "Good Job :)");
+                    clearInterval(deamonId);
                 } else {
                     if (chanceLeft > 0) {
                         $('.life .heart').eq(chanceLeft).addClass('heart-o');
                         chanceLeft -= 1;
                     } else {
+                        clearInterval(deamonId);
                         modalPopup("You lose the game, why not try it again!", "That's a pity ... ");
                     }
                 }
-                clearInterval(deamonId);
+ 
                 return;
             }
 
