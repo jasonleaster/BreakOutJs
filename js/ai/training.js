@@ -27,7 +27,8 @@
  * Date     : 2017/09/24.
  */
 
-define(['js/ai/smartplayer', 'libs/async.min'], function(Player, async) {
+define(['js/ai/smartplayer', 'libs/async.min', 'libs/lodash.js'], 
+    function(Player, async, _) {
 
     var TrainingModule = function() {
         var MAX_ITER_TIMES = 1000;
