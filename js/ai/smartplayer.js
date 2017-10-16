@@ -97,9 +97,12 @@ define(['js/game', 'libs/synaptic.min'], function(Game, synaptic) {
         this.getPlayerName = function () {
             return name;
         };
-        this.getNet = function () {
-            return genome;
+        this.setNet = function (net) {
+            return genome = Network.fromJSON(net);
         }
+        this.getNet = function () {
+            return genome.toJSON();
+        };
     }
 
     return SmartPlayer;
