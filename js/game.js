@@ -116,7 +116,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         window.addEventListener('keydown', function(event) {
             keyPressedDowns[event.key] = true;
             if (event.key === " ") {
-                _restart();
+                resetLocationOfPaddleAndBall();
             }
         });
 
@@ -243,7 +243,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             refreshScreen(gameBoardCanvasContext);
         };
 
-        var _restart = function() {
+        var resetLocationOfPaddleAndBall = function() {
             paddle.setLocation(LocationFactory((boardWidth - paddle.getWidth())/2, boardHeight - paddle.getHeight()));
             for (var i = 0; i < balls.length; i++) {
                 var ball = balls[i];
@@ -252,15 +252,23 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             gameStatus = "Running";
         }
 
-        this.restart = _restart;
+        
 
-        this.start = function() {
+        var setDeamon = function() {
             // first time to refresh screen
             refreshScreen(gameBoardCanvasContext);
 
             // timer
             deamonId = setInterval(deamon, 1000 / 20);
         };
+
+        this.restart = function  (argument) {
+            resetLocationOfPaddleAndBall();
+
+            setDeamon();
+        };
+        
+        this.start = setDeamon;
 
         // expose API for player
         this.movePaddleLeft = function () {
