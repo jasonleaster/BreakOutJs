@@ -1,7 +1,23 @@
+main {
+    margin-left: 30%;
+}
+
+nav {
+  position: absolute;
+  left: 0px;
+  width: 30%;
+  height: 100%;
+}
+
 .container {
     width: 460px;
     margin: 10px auto;
 }
+
+.withoutLeftMargin {
+    margin: 10px;
+}
+
 canvas {
     border: 3px black solid;
     background: #eee;
