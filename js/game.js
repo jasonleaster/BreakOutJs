@@ -154,6 +154,8 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             }
 
             $(".instr").text("Score : " + score);
+
+            updateKeyValuesForUI();
         }
 
         function checkIfGameOver() {
@@ -187,6 +189,23 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
             }
            
             return gameOver;
+        }
+
+        function updateKeyValuesForUI () {
+            debugger;
+            var infoTemplate = "<ul>" +
+                    "<li>Speed of ball            :" + defaultBallSpeed + " </li>" +
+                    "<li>Move direction of ball  :" + balls[0].getDirection().x + "," + balls[0].getDirection().y + " </li>" +
+                    "<li>Current Position of ball:" + balls[0].getLocation().x +  "," + balls[0].getLocation().y + "</li>" +
+                    "<li>Speed of paddle         :" + defaultPaddleSpeed +" </li>" +
+                    //"<li>Move direction of paddle:" + paddle.getDirection() +"</li>" +
+                    "<li>Current Position of paddle: " + paddle.getLocation().x + "," + paddle.getLocation().y + "</li>" +
+                "</ul>";
+
+            var panel = document.getElementById("ballAndPaddleInfo");
+            if (panel != undefined) {
+                panel.innerHTML = infoTemplate;
+            }
         }
 
         function _gameOver () {
@@ -267,7 +286,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
 
             setDeamon();
         };
-        
+
         this.start = setDeamon;
 
         // expose API for player
