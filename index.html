@@ -3,6 +3,9 @@
 https://en.wikipedia.org/wiki/Breakout_clone
 尝试回答
 1. 为什么需要闭包？
+Closures allow us to bind a function to any variables in outer scope so that we may use them at a later time.
+
+This is particularly important in Javascript where we (traditionally) do not have private variables that can abstract functionality away from the user.
 2. 闭包的好处在哪里?
 3. 没有闭包会怎么样？
  -->
@@ -10,42 +13,52 @@ https://en.wikipedia.org/wiki/Breakout_clone
 
 <head>
     <title>Breakout clone In JS</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css"/>
-    <link rel="stylesheet" type="text/css" href="css/modal.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/modal.css" />
 </head>
 
 <body>
-    <!-- Top Bar -->
-    <div class="game-notifications clearfix">
-        <div class="instr">
-            Score : 0
+     <nav>
+        <div class="container infoTable">
+            <div class="infoTableTitle">Key Values in this game:</div>
+            <div id="ballAndPaddleInfo">
+            </div>
         </div>
-        <ul class="life">
-            <li class="heart"></li>
-            <li class="heart"></li>
-            <li class="heart"></li>
-        </ul>
-        Difficulty:
-        <select>
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
-        </select>
-    </div>
+    </nav>
 
-    <div class="container">
-        <canvas id="gameBoard"></canvas>
-    </div>
-    <div class="container">
-        <div class="instr-footer">
-            <small>
+    <main>
+        <!-- Top Bar -->
+        <div class="container withoutLeftMargin">
+            <div class="game-notifications clearfix">
+                <div class="instr">
+                    Score : 0
+                </div>
+                <ul class="life">
+                    <li class="heart"></li>
+                    <li class="heart"></li>
+                    <li class="heart"></li>
+                </ul>
+                Difficulty:
+                <select>
+                    <option>Easy</option>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                </select>
+            </div>
+        </div>
+        <div class="container withoutLeftMargin">
+            <canvas id="gameBoard"></canvas>
+        </div>
+        <div class="container withoutLeftMargin">
+            <div class="instr-footer">
+                <small>
                 Use left and right keys to move paddle.
                 <br>
                 Press spacebar to start game.   
             </small>
+            </div>
         </div>
-    </div>
-
+    </main>
     <!-- Modal for game over -->
     <div class="modal-overlay">
     </div>
@@ -54,7 +67,6 @@ https://en.wikipedia.org/wiki/Breakout_clone
         <p class="modal-message">Congratulations, you've beaten the game. Would you like to play again?</p>
         <a href="./index.html" class="btn-play-again">Play breakout again!</a>
     </div>
-
     <!-- Load requirejs -->
     <script type="text/javascript" src="libs/require.js" data-main="main"></script>
 </body>

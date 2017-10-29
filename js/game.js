@@ -192,14 +192,14 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         }
 
         function updateKeyValuesForUI () {
-            debugger;
+            
             var infoTemplate = "<ul>" +
-                    "<li>Speed of ball            :" + defaultBallSpeed + " </li>" +
-                    "<li>Move direction of ball  :" + balls[0].getDirection().x + "," + balls[0].getDirection().y + " </li>" +
-                    "<li>Current Position of ball:" + balls[0].getLocation().x +  "," + balls[0].getLocation().y + "</li>" +
-                    "<li>Speed of paddle         :" + defaultPaddleSpeed +" </li>" +
+                    "<li>Speed of ball           :<span>" + defaultBallSpeed + "</span> </li>" +
+                    "<li>Move direction of ball  :<span>" + balls[0].getDirection().x + "," + balls[0].getDirection().y + " </span></li>" +
+                    "<li>Current Position of ball:<span>" + balls[0].getLocation().x +  "," + balls[0].getLocation().y + "</span></li>" +
+                    "<li>Speed of paddle         :<span>" + defaultPaddleSpeed +"</span> </li>" +
                     //"<li>Move direction of paddle:" + paddle.getDirection() +"</li>" +
-                    "<li>Current Position of paddle: " + paddle.getLocation().x + "," + paddle.getLocation().y + "</li>" +
+                    "<li>Current Position of paddle:<span>" + paddle.getLocation().x + "," + paddle.getLocation().y + "</span></li>" +
                 "</ul>";
 
             var panel = document.getElementById("ballAndPaddleInfo");
