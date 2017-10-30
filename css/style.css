@@ -5,6 +5,7 @@ main {
 nav {
   position: absolute;
   left: 0px;
+  top: 0px;
   width: 30%;
   height: 100%;
 }
@@ -22,7 +23,7 @@ nav {
     border: 1px solid #d1d5da;
     border-radius: 3px;
     width: auto;
-    margin-top: 20%;
+    margin-top: 25%;
     margin-right: 10px;
     margin-left: 10px;
     background-color: #fff;
@@ -33,21 +34,41 @@ nav {
     border-bottom: 1px solid;
     background-color: #f1f8ff;
     border-bottom-color: #c0d3eb;
-    padding: 10px 0px;
+    padding: 8px 10px;
 }
 
-.arrowRight {
-    font-size: 0;  
-    line-height: 0;  
-    border-width: 10px;  
-    border-color: #f1f8ff;  
-    border-right-width: 0;  
-    border-style: dashed;  
-    border-left-style: solid;  
-    border-top-color: transparent;  
-    border-bottom-color: transparent;  
+.infoTable::before{
+    position: absolute;
+    top: 111px;
+    right: -13px;
+    display: block;
+    width: 8px;
+    height: 0;
+    pointer-events: none;
+    content: " ";
+    border-color: transparent;
+    border-style: solid solid outset;
+    border-width: 8px;
+    border-left-color: #c0d3eb;
 }
 
+.infoTable::after{
+    position: absolute;
+    top: 111px;
+    right: -13px;
+    display: block;
+    width: 8px;
+    height: 0;
+    pointer-events: none;
+    content: " ";
+    border-color: transparent;
+    border-style: solid solid outset;
+ 
+    margin-top: 1px;
+    margin-right: 2px;
+    border-width: 7px;
+    border-left-color: #f1f8ff;
+}
 
 #ballAndPaddleInfo ul {
     padding-left: 5px;
@@ -55,6 +76,7 @@ nav {
 
 #ballAndPaddleInfo ul li {
     list-style: none;
+    margin-left: 10px;
 }
 
 #ballAndPaddleInfo ul li span {

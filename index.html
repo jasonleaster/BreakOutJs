@@ -3,15 +3,20 @@
 https://en.wikipedia.org/wiki/Breakout_clone
 尝试回答
 1. 为什么需要闭包？
-Closures allow us to bind a function to any variables in outer scope so that we may use them at a later time.
+    Closures allow us to bind a function to any variables in outer scope 
+so that we may use them at a later time.
 
-This is particularly important in Javascript where we (traditionally) do not have private variables that can abstract functionality away from the user.
+This is particularly important in Javascript where we (traditionally) 
+do not have private variables that can abstract functionality 
+away from the user.
+
 2. 闭包的好处在哪里?
 3. 没有闭包会怎么样？
  -->
 <html>
 
 <head>
+    <meta charset="utf-8">
     <title>Breakout clone In JS</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" type="text/css" href="css/modal.css" />
@@ -21,8 +26,7 @@ This is particularly important in Javascript where we (traditionally) do not hav
      <nav>
         <div class="container infoTable">
             <div class="infoTableTitle">Key Values in this game:</div>
-            <div id="ballAndPaddleInfo">
-            </div>
+            <div id="ballAndPaddleInfo"></div>
         </div>
     </nav>
 
@@ -39,7 +43,7 @@ This is particularly important in Javascript where we (traditionally) do not hav
                     <li class="heart"></li>
                 </ul>
                 Difficulty:
-                <select>
+                <select id="challenge">
                     <option>Easy</option>
                     <option>Medium</option>
                     <option>Hard</option>

@@ -65,11 +65,29 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         var abstractPaddle = {width: 150, height: 20}; 
         var abstractBall   = {width: 10,  height: 10};
         var paddle = new Paddle(abstractPaddle, LocationFactory(0, boardHeight - abstractPaddle.height), "#66D9EF");
-        var balls = [
-            new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
-            // new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
-            //new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
-        ];
+
+        var balls;
+        function initBalls () {
+            var challenge = document.getElementById("challenge").value;
+            if (challenge == "Hard") {
+                balls =  [
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, -1), "green"),
+                 ];
+            } else if (challenge == "Medium") {
+                balls =  [
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(-2, +1), "red"),
+                 ];
+            } else {
+                balls =  [
+                    new Ball(abstractBall, LocationFactory((boardWidth - abstractBall.width) / 2, 150), DirectionFactory(+1, +2), "black"),
+                ];
+            }
+        }
+        initBalls();
+
         var bricks = BrickManager.build(boardWidth, 4, 6);
 
         var defaultPaddleSpeed = 20;
@@ -116,6 +134,7 @@ define(['jquery', 'js/paddle', 'js/ball', 'js/bricks_manager', 'js/location'],
         window.addEventListener('keydown', function(event) {
             keyPressedDowns[event.key] = true;
             if (event.key === " ") {
+                initBalls();
                 resetLocationOfPaddleAndBall();
             }
         });
