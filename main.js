@@ -6,11 +6,19 @@
 
 requirejs.config({
     baseUrl: './',
+
+    /*
+      paths用于映射不位于baseUrl下的模块名
+    */
     paths: {
         "js": 'js',
         "libs": 'libs',
         'jquery': 'libs/jquery.min',
     }
+
+    /*
+        TODO 使用shim属性引入bootstrap等不支持AMD的模块
+    */
 });
 
 /*
